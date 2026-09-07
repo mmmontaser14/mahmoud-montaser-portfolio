@@ -156,24 +156,35 @@
       .control-btn { min-height: 44px; min-width: 44px; padding: 0 11px; font-size: 12px; }
     }
 
-    /* ===== 3D AI BACKGROUND ===== */
-    #p5-container {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      opacity: .64;
-      mix-blend-mode: screen;
-    }
-    [data-theme="light"] #p5-container {
-      opacity: .34;
-      mix-blend-mode: multiply;
-    }
-    nav, section, footer { position: relative; z-index: 2; }
-    .hero-bg { z-index: 1; }
-    @media (max-width: 640px), (prefers-reduced-motion: reduce) {
-      #p5-container { display: none; }
-    }
+    /* ===== VIDEO BACKGROUND ===== */
+        #video-bg {
+          position: fixed;
+          inset: 0;
+          z-index: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          opacity: 0.5;
+          mix-blend-mode: screen;
+        }
+        [data-theme="light"] #video-bg {
+          opacity: 0.25;
+          mix-blend-mode: multiply;
+        }
+        .video-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 1;
+          background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(9,9,11,0.5) 0%, rgba(9,9,11,0.85) 100%);
+        }
+        [data-theme="light"] .video-overlay {
+          background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(247,248,251,0.3) 0%, rgba(247,248,251,0.7) 100%);
+        }
+        nav, section, footer { position: relative; z-index: 2; }
+        .hero-bg { z-index: 1; }
+        @media (max-width: 640px), (prefers-reduced-motion: reduce) {
+          #video-bg { display: none; }
+        }
 
 
     html {
@@ -1133,6 +1144,10 @@
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  <video id="video-bg" autoplay loop muted playsinline poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Crect fill='%2309090b'/%3E%3C/svg%3E">
+    <source src="assets/videos/tech-background.mp4" type="video/mp4">
+  </video>
+  <div class="video-overlay"></div>
   <div id="p5-container" aria-hidden="true"></div>
 
   <!-- NAVIGATION -->
@@ -1747,33 +1762,8 @@
     updateActive();
   </script>
   <script>
-    // The 3D decoration is non-essential. Loading it when the browser is idle
-    // keeps the content, profile image, and controls responsive on first visit.
-    const loadBackgroundAnimation = () => {
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-      const slowConnection = connection?.saveData || ['slow-2g', '2g'].includes(connection?.effectiveType);
-      const lowPowerDevice = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
-        || (navigator.deviceMemory && navigator.deviceMemory <= 4);
-      if (prefersReducedMotion || slowConnection || lowPowerDevice || window.innerWidth <= 640) return;
-
-      const p5Script = document.createElement('script');
-      p5Script.src = 'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js';
-      p5Script.async = true;
-      p5Script.onload = () => {
-        const sketchScript = document.createElement('script');
-        sketchScript.src = 'assets/js/sketch.js';
-        sketchScript.async = true;
-        document.body.append(sketchScript);
-      };
-      document.head.append(p5Script);
-    };
-
-    if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(loadBackgroundAnimation, { timeout: 2500 });
-    } else {
-      window.setTimeout(loadBackgroundAnimation, 1200);
-    }
-  </script>
+      // Video background is now used instead of p5.js animation
+      // p5.js loading disabled for better performance
+    </script>
 </body>
 </html>
